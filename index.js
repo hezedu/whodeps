@@ -1,6 +1,11 @@
 var pkg = require('./package.json');
 var pkgLock = require('./package-lock.json');
-var name = 'hoek';
+var name = process.argv[2];
+if(!name){
+  var msg = '需要一个依赖包的名字'
+  console.error(msg);
+  throw new Error(msg);
+}
 
 
 var pkgDeps = pkg.dependencies;
