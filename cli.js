@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const path = require('path');
+const fs = require('fs');
 const pkgName = process.argv[2];
 if(!pkgName){
   console.error('need a name.');
@@ -8,18 +9,29 @@ if(!pkgName){
 }
 
 const pkgVersion = process.argv[3];
-// const cwd = process.cwd();
-const cwd = path.join(__dirname, '../linux-remote/client');
-let package, pkgLock;
+const cwd = process.cwd();
+const pkgPath = path.join(cwd, 'package.json');
+const pkgLockPath = path.join(cwd, 'package-lock.json');
+
 try {
-  package = require(path.join(cwd, 'package.json'));
-  pkgLock = require(path.join(cwd, 'package-lock.json'));
+  fs.accessSync(pkgPath);
 } catch(e){
-  console.error('Error:', 'Unhave package.json or package-lock.json file in "' + cwd + '"');
+  console.error(` unhave "package.json" file in "${cwd}"`);
+  return;
 }
 
+try {
+  fs.statSync(pkgLockPath);
+} catch(e){
+  console.error(` unhave "package-lock.json" file in "${cwd}"`);
+  return;
+}
+
+const package = require(pkgPath);
+const pkgLock = require(pkgLockPath);
+
 const { main} = require('./index');
-const outLog = require('./outlog');
+const outLog = require('./lib/outlog');
 const rootMap = main(package, pkgLock, pkgName, pkgVersion);
 
 outLog(rootMap);

@@ -5,10 +5,10 @@ Check who depends on the security alert package.
 
 ## Usage
 `whodeps pkgname`
+Show all depends of pkgname's root dependencies.
 
-Or give the bottom version.
-
-`whodeps pkgname 6`
+`whodeps pkgname <max version>`
+Give the max version. will only show the less than the version's root dependencies.
 
 ## Example
 `whodeps kind-of`
@@ -42,5 +42,3 @@ webpack-dev-server@3.10.3 (3) max depths: 8
   > http-proxy-middleware > micromatch > extglob > expand-brackets > define-property > is-descriptor > kind-of@3.2.2
   > http-proxy-middleware > micromatch > snapdragon > define-property > is-descriptor > kind-of@5.1.0
 ```
-例：
-`node index.js hoek`
