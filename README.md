@@ -6,10 +6,9 @@ Check who depends on the security alert package.
 ## Usage
 cd you project directory, you project must have `package.json`, `package-lock.json`.
 
-`whodeps pkgname`
+### whodeps pkgname
 Show all depends of pkgname's root dependencies.
-
-`whodeps pkgname <max version>`
+### whodeps pkgname <max version>
 Give the max version. will only show the less than the version's root dependencies.
 
 ## Example
