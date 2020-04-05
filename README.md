@@ -4,6 +4,8 @@ Check who depends on the security alert package.
 `npm install whodeps -g`;
 
 ## Usage
+cd you project directory, you project must have `package.json`, `package-lock.json`.
+
 `whodeps pkgname`
 Show all depends of pkgname's root dependencies.
 
