@@ -1,115 +1,92 @@
+const genList = require('./lib/gen-list');
+
 function main(pkg, pkgLock, name, version){
-  var pkgDeps = pkg.dependencies || Object.create(null);
+  var pkgDeps = pkg.dependencies;
+  if(!pkgDeps){
+    return;
+  }
+  var pkgLockDeps = pkgLock.dependencies;
+  if(!pkgLockDeps){
+    return;
+  }
   var pkgDevDeps = pkg.devDependencies || Object.create(null);
   var optDeps = pkg.optionalDependencies || Object.create(null);
+  Object.assign(pkgDeps, pkgDevDeps);
+  Object.assign(pkgDeps, optDeps);
   
-  var pkgLockDeps = pkgLock.dependencies || Object.create(null);
+  
+
   let formatedVersion;
   if(version){
     formatedVersion = formatVersion(version);
   }
-
-  function isCatch(v){
-    if(v._htName === name){
+  const captured = [];
+  function _isCatch(v){
+    if(v.name === name){
       if(formatedVersion){
         return isVersionLessThan(v.version, formatedVersion);
       }
       return true;
     }
   }
-  const captured = [];
-  function check(key, dep){
-    if(dep._isHtCheck){
-      return;
-    }
-    dep._isHtCheck = true;
-    dep._htName = key;
-    if(isCatch(dep)){
-      captured.push(dep);
-      return;
-      // dep._ht_ischeck = true;
-      // let p = dep2._htParent;
-      // while(p && p._ht_ischeck){
-      //   p._ht_ischeck = true;
-      //   p = p._htParent;
-      // }
-    }
-    let requires = dep.requires;
-    
-  
-    if(requires){
-      let dep2 = dep.dependencies || Object.create(null);
-      Object.keys(requires).forEach(j => {
-        let childDep = dep2[j];
-        let _p = dep._htParent;
-        let _pd = _p ? _p.dependencies : null;
-        while(!childDep && _pd){
-          childDep = _pd[j];
-          _p = _p._htParent;
-          _pd = _p ? _p.dependencies : null;
+  const tree = {
+    IS_ROOT: true,
+    child: {}
+  };
+  function genTree(_requires, _tree, depArr){
+    Object.keys(_requires).forEach(k => {
+
+      let item = _tree.child[k] = {
+        parent: _tree,
+        name: k,
+        child: Object.create(null)
+      }
+      let v = _findDep(k, depArr);
+      let depsArr2 = [v.dependencies].concat(depArr);
+
+      item.version = v.version;
+
+
+      if(v._treeItem){
+          // Object.assign(item, v._treeItem);
+          // item.child = v._treeItem.child;
+          if(!v._treeItem.parents){
+            v._treeItem.parents = [];
+          }
+          if(v._treeItem !== tree && v._treeItem.parents.indexOf(_tree) === -1){
+            v._treeItem.parents.push(_tree);
+          }
+          
+      } else {
+        v._treeItem = item;
+        if(v.requires){
+          genTree(v.requires, item, depsArr2);
         }
-        if(!childDep){
-          childDep = pkgLockDeps[j];
-        }
-        if(childDep){
-          childDep._htParent = dep;
-          check(j, childDep);
-        }
-      });
-    }
+      }
+      if(_isCatch(item)){
+        captured.push(item);
+      }
+    })
   }
-  
-  function go(deps){
-    for(let i in deps){
-      if(pkgLockDeps[i]){
-        check(i, pkgLockDeps[i]);
+
+  function _findDep(key, arr){
+    for(let i =0, len = arr.length; i < len; i++){
+      if(arr[i] && arr[i][key]){
+        return arr[i][key];
       }
     }
   }
-  Object.assign(pkgDeps, pkgDevDeps);
-  Object.assign(pkgDeps, optDeps);
-  go(pkgDeps);
+  genTree(pkgDeps, tree, [pkgLockDeps]);
+  return genList(captured);
 
-  //go(pkgDevDeps);
-  const rootMap = Object.create(null);
-  captured.forEach(v => {
-  
-    let arr = [];
-    let p = v._htParent;
-    let depth = 0;
-    while(p){
-      arr.push({
-        name: p._htName,
-        version: p.version
-      });
-      p = p._htParent;
-      depth = depth + 1;
-    }
-    
-    arr.reverse();
-    arr.push({
-      name: v._htName,
-      version: v.version
-    });
-    const rootKey = arr[0].name;
-    let v2 = rootMap[rootKey];
-    if(!v2){
-      v2 = rootMap[rootKey] = {
-        name: arr[0].name,
-        version: arr[0].version,
-        maxDepth: depth,
-        list: []
-      };
-    }
-    if(v2.maxDepth < depth){
-      v2.maxDepth = depth;
-    }
-    arr.shift();
-    v2.list.push(arr);
-  
-  });
-  return rootMap;
 }
+
+
+
+
+module.exports = main;
+
+
 
 function formatVersion(version){
   let arr = version.split('.');
@@ -146,10 +123,4 @@ function isVersionLessThan(version, fversion){
     }
   }
   return false;
-}
-
-module.exports = {
-  main,
-  formatVersion,
-  isVersionLessThan
 }
