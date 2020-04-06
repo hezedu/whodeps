@@ -16,9 +16,8 @@ Give the max version. will only show the less than the version's root dependenci
 
 ## Example
 `whodeps kind-of 6.0.0`
+<img src="demo.gif">
 
-
-`whodeps kind-of`
 
 
 
