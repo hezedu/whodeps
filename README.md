@@ -2,7 +2,7 @@
 Check who depends on the security alert package.
 
 ## Install
-`npm install whodeps -g`;
+`npm install whodeps -g`
 ## Required
 Cd you project directory, you project must have `package.json`, `package-lock.json`.
 ## Usage
