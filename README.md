@@ -1,5 +1,5 @@
 # Whodeps
-Check who depends on the security alert package.
+Check who depends on the security vulnerability package.
 
 ## Install
 `npm install whodeps -g`

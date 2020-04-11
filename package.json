@@ -1,7 +1,7 @@
 {
   "name": "whodeps",
   "version": "0.0.5",
-  "description": "Check who depends on the security alert package.",
+  "description": "Check who depends on the security vulnerability package.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
