@@ -30,7 +30,7 @@ try {
 const package = require(pkgPath);
 const pkgLock = require(pkgLockPath);
 
-const main = require('./index');
+const {main} = require('./index');
 const outLog = require('./lib/outlog');
 const rootMap = main(package, pkgLock, pkgName, pkgVersion);
 

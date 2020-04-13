@@ -84,11 +84,18 @@ function main(pkg, pkgLock, name, version){
 
 
 
-module.exports = main;
 
 
 
-function formatVersion(version){
+
+function formatVersion(_version){
+  let version
+  if(_version.indexOf('-') !== -1){
+    version = _version.split('-')[0];
+    version = version || '';
+  } else {
+    version = _version;
+  }
   let arr = version.split('.');
   if(!arr.length || arr.length > 3){
     return 0;
@@ -114,13 +121,18 @@ function formatVersion(version){
 
 function isVersionLessThan(version, fversion){
   let f2 = formatVersion(version);
-  if(f2 === 0){
-    return true;
-  }
   for(let i = 0, len = f2.length; i < len; i++){
     if(f2[i] < fversion[i]){
       return true;
+    } else if(f2[i] > fversion[i]){
+      return false;
     }
   }
   return false;
 }
+
+module.exports = {
+  main,
+  formatVersion,
+  isVersionLessThan
+};

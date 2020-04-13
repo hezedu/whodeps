@@ -1,6 +1,6 @@
 {
   "name": "whodeps",
-  "version": "0.0.6",
+  "version": "1.1.0",
   "description": "Check who depends on the security vulnerability package.",
   "main": "index.js",
   "scripts": {

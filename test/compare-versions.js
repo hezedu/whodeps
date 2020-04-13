@@ -1,6 +1,6 @@
 const {formatVersion, isVersionLessThan} = require('../index');
 
-const version = formatVersion('6.0');
+const version = formatVersion('5.9');
 
 console.log('version', version);
 
